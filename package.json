@@ -1,7 +1,7 @@
 {
   "name": "node-hapi-seed",
-  "version": "0.0.1",
-  "description": "Api for node server",
+  "version": "0.0.2",
+  "description": "Node.js seed project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,18 +18,23 @@
   "author": "Rajeshwar Patlolla",
   "license": "ISC",
   "dependencies": {
-    "@hapi/boom": "^9.1.0",
-    "@hapi/good": "^9.0.0",
-    "@hapi/good-console": "^9.0.0",
+    "@hapi/boom": "^10.0.0",
+    "@hapi/good": "^9.0.1",
+    "@hapi/good-console": "^9.0.1",
     "@hapi/good-squeeze": "^6.0.0",
-    "@hapi/hapi": "^19.2.0",
-    "@hapi/inert": "^6.0.1",
-    "@hapi/joi": "^17.1.1",
-    "@hapi/vision": "^6.0.0",
-    "bcrypt": "^5.0.0",
-    "hapi-swagger": "^13.0.2",
+    "@hapi/hapi": "^20.2.2",
+    "@hapi/inert": "^7.0.0",
+    "@hapi/vision": "^7.0.0",
+    "bcrypt": "^5.0.1",
+    "hapi-swagger": "^14.5.5",
+    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.19",
-    "mongoose": "^5.9.26"
+    "lodash": "^4.17.21",
+    "mongoose": "^6.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
   }
 }

@@ -1,32 +1,18 @@
-'use strict';
-
 const Hapi = require('@hapi/hapi');
 const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
+const HapuGood = require('@hapi/good');
 const HapiSwagger = require('hapi-swagger');
 const mongoose = require('mongoose');
 
 const Config = require('./config');
 const Routes = require('./routes');
-const Pack = require('./package');
+const Pack = require('./package.json');
 
-mongoose.connect(Config.database.uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
-
-let db = mongoose.connection;
-
-db.on('connected', function callback() {
-  console.log('Connected to DB.');
-  init();
-});
-
-db.on('error', function() {
-  console.log('Connection to DB failed!');
-  process.exit(0);
-});
-
-db.on('disconnected', function(err) {
-  console.log('Connection teminated to DB ', err);
-  process.exit(0);
+mongoose.connect(Config.database.uri, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
 });
 
 const init = async () => {
@@ -90,7 +76,7 @@ const init = async () => {
       options: swaggerOptions,
     },
     {
-      plugin: require('@hapi/good'),
+      plugin: HapuGood,
       options: goodOptions,
     },
   ]);
@@ -104,12 +90,27 @@ const init = async () => {
   }
   server.route(Routes);
 
-  server.ext('onPostAuth', async (req, h) => {
-    return h.continue;
-  });
+  server.ext('onPostAuth', async (req, h) => h.continue);
 };
 
-process.on('unhandledRejection', err => {
+const db = mongoose.connection;
+
+db.on('connected', () => {
+  console.log('Connected to DB.');
+  init();
+});
+
+db.on('error', () => {
+  console.log('Connection to DB failed!');
+  process.exit(0);
+});
+
+db.on('disconnected', (err) => {
+  console.log('Connection teminated to DB ', err);
+  process.exit(0);
+});
+
+process.on('unhandledRejection', (err) => {
   console.error(err);
   process.exit(1);
 });

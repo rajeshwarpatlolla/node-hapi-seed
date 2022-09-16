@@ -1,4 +1,4 @@
-var auth = require('./auth');
-var users = require('./users');
+const auth = require('./auth');
+const users = require('./users');
 
-module.exports = [].concat(auth, users);
+module.exports = [...auth, ...users];

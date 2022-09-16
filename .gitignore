@@ -87,4 +87,5 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-.vscode
+# un comment the below line
+# .vscode

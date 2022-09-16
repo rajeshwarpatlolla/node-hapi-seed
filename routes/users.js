@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const usersController = require('../controllers/users');
 
 const userJoiSchema = Joi.object({

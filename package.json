@@ -1,6 +1,6 @@
 {
   "name": "node-hapi-seed",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js seed project",
   "main": "index.js",
   "scripts": {
@@ -22,19 +22,19 @@
     "@hapi/good": "^9.0.1",
     "@hapi/good-console": "^9.0.1",
     "@hapi/good-squeeze": "^6.0.0",
-    "@hapi/hapi": "^20.2.2",
+    "@hapi/hapi": "^21.2.1",
     "@hapi/inert": "^7.0.0",
     "@hapi/vision": "^7.0.0",
-    "bcrypt": "^5.0.1",
-    "hapi-swagger": "^14.5.5",
-    "joi": "^17.6.0",
+    "bcrypt": "^5.1.0",
+    "hapi-swagger": "^15.0.0",
+    "joi": "^17.7.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.9.0"
   },
   "devDependencies": {
-    "eslint": "^8.23.1",
+    "eslint": "^8.33.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "eslint-plugin-import": "^2.27.5"
   }
 }

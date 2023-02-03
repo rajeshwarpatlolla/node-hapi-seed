@@ -9,12 +9,6 @@ const Config = require('./config');
 const Routes = require('./routes');
 const Pack = require('./package.json');
 
-mongoose.connect(Config.database.uri, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
-
 const init = async () => {
   const server = Hapi.server({
     host: Config.server.host,
@@ -93,26 +87,34 @@ const init = async () => {
   server.ext('onPostAuth', async (req, h) => h.continue);
 };
 
-const db = mongoose.connection;
+if (Config.database.uri) {
+  mongoose.connect(Config.database.uri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  });
 
-db.on('connected', () => {
-  console.log('Connected to DB.');
+  const db = mongoose.connection;
+
+  db.on('connected', () => {
+    console.log('Connected to DB.');
+    init();
+  });
+
+  db.on('error', () => {
+    console.log('Connection to DB failed!');
+    process.exit(0);
+  });
+
+  db.on('disconnected', (err) => {
+    console.log('Connection teminated to DB ', err);
+    process.exit(0);
+  });
+
+  process.on('unhandledRejection', (err) => {
+    console.error(err);
+    process.exit(1);
+  });
+} else {
   init();
-});
-
-db.on('error', () => {
-  console.log('Connection to DB failed!');
-  process.exit(0);
-});
-
-db.on('disconnected', (err) => {
-  console.log('Connection teminated to DB ', err);
-  process.exit(0);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error(err);
-  process.exit(1);
-});
-
-// init();
+}

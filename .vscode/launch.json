@@ -13,8 +13,8 @@
       "env": {
         "HOST": "localhost",
         "PORT": "3000",
-        "MONGODB_URI": "<MONGO_DB_URL>",
-        "JWT_SECRET_KEY": "<APP_API_TOKEN>",
+        "MONGODB_URI": "",
+        "JWT_SECRET_KEY": "",
         "JWT_TOKEN_EXPIRES_IN": "1d"
       }
     }

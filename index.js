@@ -97,8 +97,8 @@ if (Config.database.uri) {
     init();
   });
 
-  db.on('error', () => {
-    console.log('Connection to DB failed!');
+  db.on('error', (error) => {
+    console.log('Connection to DB failed!', error);
     process.exit(0);
   });
 

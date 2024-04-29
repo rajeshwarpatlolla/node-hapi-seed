@@ -88,11 +88,7 @@ const init = async () => {
 };
 
 if (Config.database.uri) {
-  mongoose.connect(Config.database.uri, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-  });
+  mongoose.connect(Config.database.uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   const db = mongoose.connection;
 

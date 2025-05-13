@@ -11,7 +11,7 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/index.js",
       "env": {
-        "HOST": "localhost",
+        "HOST": "0.0.0.0",
         "PORT": "3000",
         "MONGODB_URI": "",
         "JWT_SECRET_KEY": "",

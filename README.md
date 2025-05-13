@@ -1,6 +1,6 @@
 # A starter project for Hapi.js application
 
-### How to use?
+## How to use?
 
 #### Approach - 1
 
@@ -51,4 +51,21 @@
 }
 ```
 
-#### NOTE: Add `.vscode` in `.gitignore` file
+## Dockerizing
+
+#### Create .env file with below content
+````
+HOST=0.0.0.0
+PORT=3000
+MONGODB_URI=
+JWT_SECRET_KEY=
+JWT_TOKEN_EXPIRES_IN=1d
+````
+
+#### Run steps to build and run
+````
+docker build -t docker-node-test .
+docker run --env-file .env -p 3000:3000 docker-node-test
+````
+
+#### NOTE: Add `.vscode` and .env in `.gitignore` file

@@ -1,16 +1,15 @@
-const Joi = require('joi');
-const authController = require('../controllers/auth');
+import Joi from 'joi';
+
+import authController from '../controllers/auth.js';
 
 const userJoiSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string()
-    .email()
-    .required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required(),
 }).unknown();
 
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/register',
@@ -34,9 +33,7 @@ module.exports = [
       auth: false,
       validate: {
         payload: Joi.object({
-          email: Joi.string()
-            .email()
-            .required(),
+          email: Joi.string().email().required(),
           password: Joi.string().required(),
         }),
       },

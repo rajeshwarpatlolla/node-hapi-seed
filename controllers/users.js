@@ -1,6 +1,6 @@
-const Boom = require('@hapi/boom');
+import Boom from '@hapi/boom';
 
-const UsersModel = require('../models/users');
+import UsersModel from '../models/users.js';
 
 const createNewUser = async (req) => {
   try {
@@ -75,7 +75,7 @@ const deleteUserDetails = async (req) => {
   }
 };
 
-module.exports = {
+export default {
   createNewUser,
   getAllUsers,
   getUserDetails,

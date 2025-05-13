@@ -1,8 +1,9 @@
 {
   "name": "node-hapi-seed",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Node.js seed project",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node index",
@@ -19,22 +20,19 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "@hapi/good": "^9.0.1",
-    "@hapi/good-console": "^9.0.1",
-    "@hapi/good-squeeze": "^6.0.0",
-    "@hapi/hapi": "^21.3.9",
+    "@hapi/hapi": "^21.4.0",
     "@hapi/inert": "^7.1.0",
     "@hapi/vision": "^7.0.3",
-    "bcrypt": "^5.1.1",
-    "hapi-swagger": "^17.2.1",
-    "joi": "^17.13.0",
+    "bcrypt": "^6.0.0",
+    "hapi-swagger": "^17.3.2",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-    "mongoose": "^8.3.2"
+    "mongoose": "^8.14.2"
   },
   "devDependencies": {
-    "eslint": "^9.1.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.1"
+    "@eslint/js": "^9.4.0",
+    "eslint": "^9.4.0",
+    "globals": "^15.4.0"
   }
 }

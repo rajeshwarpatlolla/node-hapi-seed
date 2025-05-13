@@ -1,4 +1,4 @@
-const auth = require('./auth');
-const users = require('./users');
+import auth from './auth.js';
+import users from './users.js';
 
-module.exports = [...auth, ...users];
+export default [...auth, ...users];

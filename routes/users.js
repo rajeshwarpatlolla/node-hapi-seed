@@ -1,16 +1,15 @@
-const Joi = require('joi');
-const usersController = require('../controllers/users');
+import Joi from 'joi';
+
+import usersController from '../controllers/users.js';
 
 const userJoiSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string()
-    .email()
-    .required(),
+  email: Joi.string().email().required(),
   mobileNo: Joi.string().required(),
 }).unknown();
 
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/users',

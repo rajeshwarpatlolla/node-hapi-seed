@@ -1,10 +1,10 @@
-const jwt = require('jsonwebtoken');
-const _ = require('lodash');
-const bcrypt = require('bcrypt');
-const Boom = require('@hapi/boom');
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
+import bcrypt from 'bcrypt';
+import Boom from '@hapi/boom';
 
-const Config = require('../config');
-const UsersModel = require('../models/users');
+import Config from '../config/index.js';
+import UsersModel from '../models/users.js';
 
 const registerUser = async (req) => {
   try {
@@ -46,4 +46,4 @@ const loginUser = async (req) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+export default { registerUser, loginUser };

@@ -1,13 +1,11 @@
-const Hapi = require('@hapi/hapi');
-const Inert = require('@hapi/inert');
-const Vision = require('@hapi/vision');
-const HapuGood = require('@hapi/good');
-const HapiSwagger = require('hapi-swagger');
-const mongoose = require('mongoose');
+import Hapi from '@hapi/hapi';
+import Inert from '@hapi/inert';
+import Vision from '@hapi/vision';
+import HapiSwagger from 'hapi-swagger';
+import mongoose from 'mongoose';
 
-const Config = require('./config');
-const Routes = require('./routes');
-const Pack = require('./package.json');
+import Config from './config/index.js';
+import Routes from './routes/index.js';
 
 const init = async () => {
   const server = Hapi.server({
@@ -27,7 +25,6 @@ const init = async () => {
   const swaggerOptions = {
     info: {
       title: Config.swagger.title,
-      version: Pack.version,
       contact: {
         name: Config.swagger.contact,
       },
@@ -43,35 +40,12 @@ const init = async () => {
     security: [{ jwt: [] }],
   };
 
-  const goodOptions = {
-    ops: {
-      interval: 1000,
-    },
-    reporters: {
-      console: [
-        {
-          module: '@hapi/good-squeeze',
-          name: 'Squeeze',
-          args: [{ log: '*', response: '*', ops: '*' }],
-        },
-        {
-          module: '@hapi/good-console',
-        },
-        'stdout',
-      ],
-    },
-  };
-
   await server.register([
     Inert,
     Vision,
     {
       plugin: HapiSwagger,
       options: swaggerOptions,
-    },
-    {
-      plugin: HapuGood,
-      options: goodOptions,
     },
   ]);
 

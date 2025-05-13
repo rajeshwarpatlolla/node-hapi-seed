@@ -53,6 +53,7 @@
 
 ## Dockerizing
 
+### Process - 1
 #### Create .env file with below content
 ````
 HOST=0.0.0.0
@@ -67,5 +68,20 @@ JWT_TOKEN_EXPIRES_IN=1d
 docker build -t docker-node-test .
 docker run --env-file .env -p 3000:3000 docker-node-test
 ````
+
+### Process - 2
+- Add `docker-compose.yml` file with content below, so that it picks the .env file for environment variables
+````
+version: '3.8'
+services:
+  app:
+    image: docker-node-test
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+````
+
+- Then run `docker-compose up` command
 
 #### NOTE: Add `.vscode` and .env in `.gitignore` file

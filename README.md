@@ -108,28 +108,38 @@ node-hapi-seed/
 
 ### VS Code Configuration
 
-Create `.vscode/launch.json` for debugging:
+The project includes pre-configured VS Code debug settings in `.vscode/launch.json`:
 
 ```json
 {
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Hapi Server",
       "type": "node",
       "request": "launch",
-      "name": "🚀 Launch Program",
       "program": "${workspaceFolder}/index.js",
+      "cwd": "${workspaceFolder}",
       "env": {
         "HOST": "localhost",
         "PORT": "3000",
         "MONGODB_URI": "mongodb://localhost:27017/your_database",
         "JWT_SECRET_KEY": "your_jwt_secret_key",
         "JWT_TOKEN_EXPIRES_IN": "24h"
-      }
+      },
+      "console": "integratedTerminal",
+      "restart": true
     }
   ]
 }
 ```
+
+**How to use:**
+1. Open the Debug panel (Ctrl/Cmd + Shift + D)
+2. Select "Launch Hapi Server" from the dropdown
+3. Press F5 or click the play button to start debugging
+
+**Note:** Update the `MONGODB_URI` in the launch configuration with your actual database connection string.
 
 ### VS Code Settings
 

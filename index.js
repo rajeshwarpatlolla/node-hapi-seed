@@ -1,116 +1,133 @@
-const Hapi = require('@hapi/hapi');
-const Inert = require('@hapi/inert');
-const Vision = require('@hapi/vision');
-const HapuGood = require('@hapi/good');
-const HapiSwagger = require('hapi-swagger');
-const mongoose = require('mongoose');
+import Hapi from '@hapi/hapi';
+import HapiSwagger from 'hapi-swagger';
+import Inert from '@hapi/inert';
+import Vision from '@hapi/vision';
+import Boom from '@hapi/boom';
+import { readFileSync } from 'fs';
 
-const Config = require('./config');
-const Routes = require('./routes');
-const Pack = require('./package.json');
+import Routes from './routes/index.js';
+import { connectDB, disconnectDB } from './database/connection.js';
+import { getSwaggerOptions } from './config/swagger.js';
+import { logToFile } from './utils/logger.js';
 
-const init = async () => {
-  const server = Hapi.server({
-    host: Config.server.host,
-    port: Config.server.port,
+const packageJson = JSON.parse(readFileSync('./package.json'));
+
+const createServer = () => {
+  return Hapi.server({
+    host: process.env.HOST || 'localhost',
+    port: process.env.PORT || 3000,
     routes: {
       cors: true,
       validate: {
-        // If any Joi validations fail, it will send the proper error message to the user
-        failAction: (request, h, err) => {
-          throw err;
+        // Global Joi validation error handler
+        failAction: (_request, _h, err) => {
+          const errorMsg = `Validation Error: ${err?.message}`;
+          console.error('❌', errorMsg);
+          logToFile(`Validation Error: ${err?.message}`);
+          throw Boom.badRequest(`Invalid payload: ${err?.message}`);
         },
       },
     },
   });
-
-  const swaggerOptions = {
-    info: {
-      title: Config.swagger.title,
-      version: Pack.version,
-      contact: {
-        name: Config.swagger.contact,
-      },
-    },
-    schemes: ['http', 'https'],
-    securityDefinitions: {
-      jwt: {
-        type: 'apiKey',
-        name: 'Authorization',
-        in: 'header',
-      },
-    },
-    security: [{ jwt: [] }],
-  };
-
-  const goodOptions = {
-    ops: {
-      interval: 1000,
-    },
-    reporters: {
-      console: [
-        {
-          module: '@hapi/good-squeeze',
-          name: 'Squeeze',
-          args: [{ log: '*', response: '*', ops: '*' }],
-        },
-        {
-          module: '@hapi/good-console',
-        },
-        'stdout',
-      ],
-    },
-  };
-
-  await server.register([
-    Inert,
-    Vision,
-    {
-      plugin: HapiSwagger,
-      options: swaggerOptions,
-    },
-    {
-      plugin: HapuGood,
-      options: goodOptions,
-    },
-  ]);
-
-  try {
-    await server.start();
-    console.log(`Server running on ${server.info.uri}`);
-    console.log(`Swagger documentation is running on ${server.info.uri}/documentation`);
-  } catch (err) {
-    console.log(err);
-  }
-  server.route(Routes);
-
-  server.ext('onPostAuth', async (req, h) => h.continue);
 };
 
-if (Config.database.uri) {
-  mongoose.connect(Config.database.uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const registerPlugins = async (server) => {
+  await server.register([
+    Inert, // Required by hapi-swagger
+    Vision, // Required by hapi-swagger
+    {
+      plugin: HapiSwagger,
+      options: getSwaggerOptions(packageJson),
+    },
+  ]);
+};
 
-  const db = mongoose.connection;
+const startServer = async (server) => {
+  try {
+    await server.start();
+    const serverInfo = `Server running on ${server.info.uri}`;
+    const swaggerInfo = `Swagger docs: ${server.info.uri}/documentation`;
+    
+    console.log(`🚀 ${serverInfo}`);
+    console.log(`📚 ${swaggerInfo}`);
+    
+    logToFile(`Server started successfully - ${serverInfo}`);
+    logToFile(`Swagger documentation available at ${swaggerInfo}`);
+  } catch (error) {
+    const errorMsg = `Server start failed: ${error.message}`;
+    console.error('❌', errorMsg);
+    logToFile(`Server start failed: ${error.message}`);
+    throw error;
+  }
+};
 
-  db.on('connected', () => {
-    console.log('Connected to DB.');
-    init();
+const init = async () => {
+  const server = createServer();
+
+  await registerPlugins(server);
+  server.route(Routes);
+
+  // Log all incoming requests
+  server.ext('onRequest', (request, h) => {
+    const logData = {
+      method: request.method,
+      url: request.url.pathname,
+      userAgent: request.headers['user-agent'],
+      ip: request.info.remoteAddress,
+      timestamp: new Date().toISOString()
+    };
+    
+    logToFile(`Incoming Request: ${JSON.stringify(logData)}`);
+    return h.continue;
   });
 
-  db.on('error', (error) => {
-    console.log('Connection to DB failed!', error);
+  // Log all responses
+  server.ext('onPreResponse', (request, h) => {
+    const response = request.response;
+    if (response.isBoom) {
+      logToFile(`Error Response: ${response.output.statusCode} - ${response.message} - URL: ${request.url.pathname}`);
+    } else {
+      logToFile(`Success Response: ${response.statusCode || 200} - URL: ${request.url.pathname}`);
+    }
+    return h.continue;
+  });
+
+  // Graceful shutdown handling
+  process.on('SIGTERM', async () => {
+    console.log('🛑 SIGTERM received, shutting down gracefully...');
+    logToFile('Server shutdown initiated by SIGTERM');
+    await server.stop();
+    await disconnectDB();
     process.exit(0);
   });
 
-  db.on('disconnected', (err) => {
-    console.log('Connection teminated to DB ', err);
+  process.on('SIGINT', async () => {
+    console.log('🛑 SIGINT received, shutting down gracefully...');
+    logToFile('Server shutdown initiated by SIGINT');
+    await server.stop();
+    await disconnectDB();
     process.exit(0);
   });
 
-  process.on('unhandledRejection', (err) => {
-    console.error(err);
-    process.exit(1);
+  await startServer(server);
+};
+
+// Database connection and server startup
+if (process.env.MONGODB_URI) {
+  connectDB().then((success) => {
+    if (success) {
+      logToFile('MongoDB connection successful');
+      init();
+    } else {
+      const errorMsg = 'Failed to connect to database, exiting...';
+      console.error('❌', errorMsg);
+      logToFile(`MongoDB connection failed - ${errorMsg}`);
+      process.exit(1);
+    }
   });
 } else {
+  const warningMsg = 'No MONGODB_URI provided, starting without database...';
+  console.log('⚠️', warningMsg);
+  logToFile(warningMsg);
   init();
 }

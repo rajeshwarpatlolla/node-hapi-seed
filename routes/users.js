@@ -1,33 +1,41 @@
-const Joi = require('joi');
-const usersController = require('../controllers/users');
+import Joi from 'joi';
+import {
+  createNewUser,
+  getAllUsers,
+  getUserDetails,
+  updateUserDetails,
+  deleteUserDetails
+} from '../controllers/users.js';
 
-const userJoiSchema = Joi.object({
+const userSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string()
-    .email()
-    .required(),
+  email: Joi.string().email().required(),
   mobileNo: Joi.string().required(),
-}).unknown();
+}).unknown(false);
 
-module.exports = [
+const userIdSchema = Joi.object({
+  userId: Joi.string().required(),
+});
+
+export default [
   {
     method: 'POST',
     path: '/users',
-    handler: usersController.createNewUser,
+    handler: createNewUser,
     config: {
       description: 'Create a new user',
       tags: ['api', 'users'],
       auth: false,
       validate: {
-        payload: userJoiSchema,
+        payload: userSchema,
       },
     },
   },
   {
     method: 'GET',
     path: '/users',
-    handler: usersController.getAllUsers,
+    handler: getAllUsers,
     config: {
       description: 'Get all users',
       tags: ['api', 'users'],
@@ -37,46 +45,40 @@ module.exports = [
   {
     method: 'GET',
     path: '/users/{userId}',
-    handler: usersController.getUserDetails,
+    handler: getUserDetails,
     config: {
-      description: 'Get user details',
+      description: 'Get user details by ID',
       tags: ['api', 'users'],
       auth: false,
       validate: {
-        params: Joi.object({
-          userId: Joi.string().required(),
-        }),
+        params: userIdSchema,
       },
     },
   },
   {
     method: 'PUT',
     path: '/users/{userId}',
-    handler: usersController.updateUserDetails,
+    handler: updateUserDetails,
     config: {
-      description: 'Update user details',
+      description: 'Update user details by ID',
       tags: ['api', 'users'],
       auth: false,
       validate: {
-        params: Joi.object({
-          userId: Joi.string().required(),
-        }),
-        payload: userJoiSchema,
+        params: userIdSchema,
+        payload: userSchema,
       },
     },
   },
   {
     method: 'DELETE',
     path: '/users/{userId}',
-    handler: usersController.deleteUserDetails,
+    handler: deleteUserDetails,
     config: {
-      description: 'Delete user details',
+      description: 'Delete user by ID',
       tags: ['api', 'users'],
       auth: false,
       validate: {
-        params: Joi.object({
-          userId: Joi.string().required(),
-        }),
+        params: userIdSchema,
       },
     },
   },

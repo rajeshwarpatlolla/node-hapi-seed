@@ -1,4 +1,6 @@
-const auth = require('./auth');
-const users = require('./users');
+// Route aggregator - combines all route modules into a single array
+import authRoutes from './auth.js';
+import userRoutes from './users.js';
+import healthRoutes from './health.js';
 
-module.exports = [...auth, ...users];
+export default [...authRoutes, ...userRoutes, ...healthRoutes];

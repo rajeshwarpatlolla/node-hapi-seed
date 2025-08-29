@@ -1,28 +1,26 @@
-const jwt = require('jsonwebtoken');
-const _ = require('lodash');
-const bcrypt = require('bcrypt');
-const Boom = require('@hapi/boom');
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
+import bcrypt from 'bcrypt';
+import Boom from '@hapi/boom';
 
-const Config = require('../config');
-const UsersModel = require('../models/users');
+import UsersModel from '../models/users.js';
 
-const registerUser = async (req) => {
+export const registerUser = async (req) => {
   try {
     const userFound = await UsersModel.findOne({ email: req.payload.email.toLowerCase() });
     if (userFound) {
       return Boom.conflict('User with this email already exists');
     }
-    req.payload.password = bcrypt.hashSync(req.payload.password, 8);
+    req.payload.password = bcrypt.hashSync(req.payload.password, 10);
     const user = new UsersModel(req.payload);
-    return await user.save();
+    const savedUser = await user.save();
+    return savedUser;
   } catch (error) {
-    console.log(error.message);
     return Boom.badImplementation();
   }
 };
 
-const loginUser = async (req) => {
-  let token = null;
+export const loginUser = async (req) => {
   try {
     const user = await UsersModel.findOne({ email: req.payload.email.toLowerCase() });
     if (!user) {
@@ -31,7 +29,8 @@ const loginUser = async (req) => {
     const correctPwd = bcrypt.compareSync(req.payload.password, user.password);
     if (correctPwd) {
       const userData = _.pick(user, ['email', 'firstName', 'lastName']);
-      token = jwt.sign(userData, Config.auth.jwtSecretKey, { expiresIn: Config.auth.expiresIn });
+      const token = jwt.sign(userData, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_TOKEN_EXPIRES_IN });
+
       return {
         success: true,
         message: 'Login Successful',
@@ -39,11 +38,9 @@ const loginUser = async (req) => {
         statusCode: 200,
       };
     }
+
     return Boom.unauthorized('Invalid password');
   } catch (error) {
-    console.log(error.message);
     return Boom.badImplementation();
   }
 };
-
-module.exports = { registerUser, loginUser };

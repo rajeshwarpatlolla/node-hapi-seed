@@ -1,44 +1,42 @@
-const Joi = require('joi');
-const authController = require('../controllers/auth');
+import Joi from 'joi';
+import { registerUser, loginUser } from '../controllers/auth.js';
 
-const userJoiSchema = Joi.object({
+const registerSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string()
-    .email()
-    .required(),
-  password: Joi.string().required(),
-}).unknown();
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+}).unknown(false);
 
-module.exports = [
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+}).unknown(false);
+
+export default [
   {
     method: 'POST',
     path: '/register',
-    handler: authController.registerUser,
+    handler: registerUser,
     config: {
-      description: 'Register the user',
+      description: 'Register a new user account',
       tags: ['api', 'auth'],
       auth: false,
       validate: {
-        payload: userJoiSchema,
+        payload: registerSchema,
       },
     },
   },
   {
     method: 'POST',
     path: '/login',
-    handler: authController.loginUser,
+    handler: loginUser,
     config: {
-      description: 'Login User',
+      description: 'Authenticate user and get JWT token',
       tags: ['api', 'auth'],
       auth: false,
       validate: {
-        payload: Joi.object({
-          email: Joi.string()
-            .email()
-            .required(),
-          password: Joi.string().required(),
-        }),
+        payload: loginSchema,
       },
     },
   },

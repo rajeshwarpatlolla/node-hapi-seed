@@ -8,32 +8,22 @@ export const createNewUser = async (req) => {
     if (userFound) {
       return Boom.conflict('User with this email already exists');
     }
+
     const user = new UsersModel(req.payload);
     const savedUser = await user.save();
 
-    return {
-      success: true,
-      message: 'User created successfully',
-      data: savedUser,
-      statusCode: 201,
-    };
+    return savedUser;
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
 
 export const getAllUsers = async () => {
   try {
     const users = await UsersModel.find({});
-
-    return {
-      success: true,
-      message: 'Users retrieved successfully',
-      data: users,
-      statusCode: 200,
-    };
+    return users;
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
 
@@ -44,14 +34,9 @@ export const getUserDetails = async (req) => {
       return Boom.notFound("User with this ID doesn't exist");
     }
 
-    return {
-      success: true,
-      message: 'User details retrieved successfully',
-      data: userFound,
-      statusCode: 200,
-    };
+    return userFound;
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
 
@@ -61,15 +46,12 @@ export const updateUserDetails = async (req) => {
     if (!userFound) {
       return Boom.notFound("User with this ID doesn't exist");
     }
+
     await UsersModel.replaceOne({ _id: req.params.userId }, req.payload);
 
-    return {
-      success: true,
-      message: 'User updated successfully',
-      statusCode: 200,
-    };
+    return { message: 'User updated successfully' };
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
 
@@ -79,14 +61,11 @@ export const deleteUserDetails = async (req) => {
     if (!userFound) {
       return Boom.notFound("User with this ID doesn't exist");
     }
+
     await UsersModel.deleteOne({ _id: req.params.userId });
 
-    return {
-      success: true,
-      message: 'User deleted successfully',
-      statusCode: 200,
-    };
+    return { message: 'User deleted successfully' };
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };

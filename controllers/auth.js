@@ -11,12 +11,14 @@ export const registerUser = async (req) => {
     if (userFound) {
       return Boom.conflict('User with this email already exists');
     }
+
     req.payload.password = bcrypt.hashSync(req.payload.password, 10);
     const user = new UsersModel(req.payload);
     const savedUser = await user.save();
+
     return savedUser;
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
 
@@ -26,21 +28,17 @@ export const loginUser = async (req) => {
     if (!user) {
       return Boom.notFound('User not found with the given email id');
     }
+
     const correctPwd = bcrypt.compareSync(req.payload.password, user.password);
     if (correctPwd) {
       const userData = _.pick(user, ['email', 'firstName', 'lastName']);
       const token = jwt.sign(userData, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_TOKEN_EXPIRES_IN });
 
-      return {
-        success: true,
-        message: 'Login Successful',
-        data: token,
-        statusCode: 200,
-      };
+      return { token };
     }
 
     return Boom.unauthorized('Invalid password');
   } catch (error) {
-    return Boom.badImplementation();
+    return Boom.badRequest(error.message);
   }
 };
